@@ -13,16 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->enum('role', ['admin', 'warga', 'umkm', 'pengunjung', 'kades']);
-            $table->string('nik');
-            $table->string('dusun');
-            $table->string('phone');
-            $table->string('photo')->nullable();
+            $table->string('title');
+            $table->text('description');
+            $table->date('date');
+            $table->string('location');
+            $table->enum('type', ['budaya', 'keagamaan', 'umkm', 'umum']);
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
@@ -34,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('events');
     }
 }; 

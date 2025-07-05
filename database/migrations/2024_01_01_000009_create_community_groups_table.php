@@ -13,16 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('community_groups', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->enum('role', ['admin', 'warga', 'umkm', 'pengunjung', 'kades']);
-            $table->string('nik');
-            $table->string('dusun');
+            $table->enum('type', ['karang_taruna', 'pokdarwis', 'kelompok_tani']);
+            $table->text('description');
+            $table->string('leader_name');
             $table->string('phone');
-            $table->string('photo')->nullable();
+            $table->string('logo')->nullable();
             $table->timestamps();
         });
     }
@@ -34,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('community_groups');
     }
 }; 

@@ -13,16 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('galleries', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->enum('role', ['admin', 'warga', 'umkm', 'pengunjung', 'kades']);
-            $table->string('nik');
-            $table->string('dusun');
-            $table->string('phone');
-            $table->string('photo')->nullable();
+            $table->string('title');
+            $table->enum('category', ['umkm', 'wisata', 'event', 'desa']);
+            $table->string('image_path');
+            $table->foreignId('uploaded_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -34,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('galleries');
     }
 }; 

@@ -13,16 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('homestays', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->enum('role', ['admin', 'warga', 'umkm', 'pengunjung', 'kades']);
-            $table->string('nik');
-            $table->string('dusun');
-            $table->string('phone');
-            $table->string('photo')->nullable();
+            $table->text('description');
+            $table->text('address');
+            $table->decimal('price_per_night', 10, 2);
+            $table->string('contact');
+            $table->string('image')->nullable();
+            $table->enum('status', ['tersedia', 'penuh']);
             $table->timestamps();
         });
     }
@@ -34,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('homestays');
     }
 }; 
