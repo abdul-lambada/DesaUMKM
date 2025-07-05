@@ -8,8 +8,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
@@ -47,6 +49,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Determine if the user can access the Filament admin panel.
+     */
+    public function canAccessFilament(): bool
+    {
+        return $this->hasRole(['admin', 'kades']);
+    }
 
     /**
      * Get the UMKM associated with the user.
@@ -94,13 +104,5 @@ class User extends Authenticatable
     public function articles()
     {
         return $this->hasMany(Article::class);
-    }
-
-    /**
-     * Get the feedbacks submitted by the user.
-     */
-    public function feedbacks()
-    {
-        return $this->hasMany(Feedback::class);
     }
 }
