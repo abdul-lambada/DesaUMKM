@@ -17,7 +17,7 @@ class SuratOnlineResource extends Resource
 {
     protected static ?string $model = SuratOnline::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     public static function form(Form $form): Form
     {

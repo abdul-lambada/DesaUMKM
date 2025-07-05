@@ -17,7 +17,7 @@ class CommunityGroupResource extends Resource
 {
     protected static ?string $model = CommunityGroup::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     public static function form(Form $form): Form
     {

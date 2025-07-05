@@ -17,7 +17,7 @@ class MapPointResource extends Resource
 {
     protected static ?string $model = MapPoint::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-map';
 
     public static function form(Form $form): Form
     {

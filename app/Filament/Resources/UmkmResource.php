@@ -17,7 +17,7 @@ class UmkmResource extends Resource
 {
     protected static ?string $model = Umkm::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
+    protected static ?string $navigationIcon = 'heroicon-o-briefcase';
     
     protected static ?string $navigationGroup = 'UMKM Management';
     

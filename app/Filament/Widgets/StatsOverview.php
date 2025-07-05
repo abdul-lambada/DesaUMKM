@@ -21,47 +21,47 @@ class StatsOverview extends BaseWidget
         return [
             Card::make('Total Users', User::count())
                 ->description('Registered users')
-                ->descriptionIcon('heroicon-s-users')
+                ->descriptionIcon('heroicon-o-users')
                 ->color('primary'),
             
             Card::make('Total UMKM', Umkm::count())
                 ->description('Registered businesses')
-                ->descriptionIcon('heroicon-s-building-storefront')
+                ->descriptionIcon('heroicon-o-briefcase')
                 ->color('success'),
             
             Card::make('Total Products', Product::count())
                 ->description('Available products')
-                ->descriptionIcon('heroicon-s-shopping-bag')
+                ->descriptionIcon('heroicon-o-cube')
                 ->color('info'),
             
             Card::make('Total Orders', Order::count())
                 ->description('Product orders')
-                ->descriptionIcon('heroicon-s-shopping-cart')
+                ->descriptionIcon('heroicon-o-shopping-cart')
                 ->color('warning'),
             
             Card::make('Tourism Places', Wisata::count())
                 ->description('Tourism destinations')
-                ->descriptionIcon('heroicon-s-map-pin')
+                ->descriptionIcon('heroicon-o-map')
                 ->color('success'),
             
             Card::make('Total Bookings', Booking::count())
                 ->description('Homestay bookings')
-                ->descriptionIcon('heroicon-s-calendar')
+                ->descriptionIcon('heroicon-o-calendar')
                 ->color('info'),
             
             Card::make('Events', Event::count())
                 ->description('Community events')
-                ->descriptionIcon('heroicon-s-calendar-days')
+                ->descriptionIcon('heroicon-o-clipboard-list')
                 ->color('warning'),
             
             Card::make('Online Letters', SuratOnline::count())
                 ->description('Online letter requests')
-                ->descriptionIcon('heroicon-s-document-text')
+                ->descriptionIcon('heroicon-o-document-text')
                 ->color('primary'),
             
             Card::make('Feedbacks', Feedback::count())
                 ->description('User feedbacks')
-                ->descriptionIcon('heroicon-s-chat-bubble-left-right')
+                ->descriptionIcon('heroicon-o-chat-alt-2')
                 ->color('success'),
         ];
     }
