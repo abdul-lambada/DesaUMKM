@@ -17,12 +17,14 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role', ['admin', 'warga', 'umkm', 'pengunjung', 'kades']);
             $table->string('nik');
             $table->string('dusun');
             $table->string('phone');
             $table->string('photo')->nullable();
+            $table->rememberToken();
             $table->timestamps();
         });
     }
