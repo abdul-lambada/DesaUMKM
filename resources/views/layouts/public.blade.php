@@ -1,101 +1,272 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Desa UMKM')</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="description" content="Desa UMKM - Platform digital untuk mengembangkan usaha mikro, kecil, dan menengah di desa">
+    
+    <title>@yield('title', 'Desa UMKM') - {{ config('app.name', 'Laravel') }}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    @stack('styles')
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="bg-white shadow sticky top-0 z-30">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-            <a href="/" class="text-2xl font-bold text-blue-700 flex items-center gap-2">
-                <span class="inline-block"><svg width="28" height="28" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#2563eb"/><path d="M12 6v6l4 2" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                Desa UMKM
-            </a>
-            <nav class="hidden md:flex space-x-6 items-center">
-                <div class="flex space-x-6">
-                    <a href="/" class="@if(request()->routeIs('public.home')) text-blue-700 font-bold underline @else hover:text-blue-600 font-medium transition-colors @endif">Beranda</a>
-                    <a href="/wisata" class="@if(request()->routeIs('public.wisata')) text-blue-700 font-bold underline @else hover:text-blue-600 font-medium transition-colors @endif">Wisata</a>
-                    <a href="/umkm" class="@if(request()->routeIs('public.umkm')) text-blue-700 font-bold underline @else hover:text-blue-600 font-medium transition-colors @endif">UMKM</a>
+<body class="font-sans antialiased bg-gray-50">
+    <!-- Navigation -->
+    <nav x-data="{ open: false, scrolled: false }" 
+         @scroll.window="scrolled = window.pageYOffset > 50"
+         :class="scrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'"
+         class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 w-full">
+                <!-- Logo -->
+                <div class="flex items-center flex-shrink-0">
+                    <a href="{{ route('public.home') }}" class="flex items-center space-x-2">
+                        <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-home text-white text-lg"></i>
+                        </div>
+                        <span class="text-xl font-bold text-gray-800">Desa UMKM</span>
+                    </a>
                 </div>
-                <div class="relative group ml-6">
-                    <button class="flex items-center gap-1 hover:text-blue-600 font-medium transition-colors focus:outline-none">
-                        Menu Lain
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+
+                <!-- Desktop Navigation (Grouped) -->
+                <div class="hidden md:flex flex-1 justify-center items-center space-x-6">
+                    <a href="{{ route('public.home') }}" class="text-gray-700 hover:text-green-600 transition-colors duration-200 font-medium whitespace-nowrap {{ request()->routeIs('public.home') ? 'border-b-2 border-green-600 text-green-700 font-bold' : '' }}">Beranda</a>
+                    <!-- Profil Desa Dropdown -->
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" @keydown.escape="open = false" type="button" class="flex items-center text-gray-700 hover:text-green-600 font-medium transition-colors duration-200 whitespace-nowrap focus:outline-none {{ request()->routeIs('public.komunitas') || request()->routeIs('public.galeri') ? 'border-b-2 border-green-600 text-green-700 font-bold' : '' }}">
+                            Profil Desa <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                        <div x-show="open" @click.away="open = false" x-transition class="absolute left-0 mt-2 w-44 bg-white rounded shadow-lg z-50 py-2">
+                            <a href="{{ route('public.komunitas') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 {{ request()->routeIs('public.komunitas') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Komunitas</a>
+                            <a href="{{ route('public.galeri') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 {{ request()->routeIs('public.galeri') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Galeri</a>
+                        </div>
+                    </div>
+                    <!-- UMKM & Produk Dropdown -->
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" @keydown.escape="open = false" type="button" class="flex items-center text-gray-700 hover:text-green-600 font-medium transition-colors duration-200 whitespace-nowrap focus:outline-none {{ request()->routeIs('public.umkm') || request()->routeIs('public.produk') ? 'border-b-2 border-green-600 text-green-700 font-bold' : '' }}">
+                            UMKM & Produk <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                        <div x-show="open" @click.away="open = false" x-transition class="absolute left-0 mt-2 w-44 bg-white rounded shadow-lg z-50 py-2">
+                            <a href="{{ route('public.umkm') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 {{ request()->routeIs('public.umkm') ? 'bg-green-100 text-green-700 font-bold' : '' }}">UMKM</a>
+                            <a href="{{ route('public.produk') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 {{ request()->routeIs('public.produk') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Produk</a>
+                        </div>
+                    </div>
+                    <!-- Pariwisata Dropdown -->
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" @keydown.escape="open = false" type="button" class="flex items-center text-gray-700 hover:text-green-600 font-medium transition-colors duration-200 whitespace-nowrap focus:outline-none {{ request()->routeIs('public.wisata') || request()->routeIs('public.homestay') || request()->routeIs('public.event') ? 'border-b-2 border-green-600 text-green-700 font-bold' : '' }}">
+                            Pariwisata <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                        <div x-show="open" @click.away="open = false" x-transition class="absolute left-0 mt-2 w-44 bg-white rounded shadow-lg z-50 py-2">
+                            <a href="{{ route('public.wisata') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 {{ request()->routeIs('public.wisata') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Wisata</a>
+                            <a href="{{ route('public.homestay') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 {{ request()->routeIs('public.homestay') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Homestay</a>
+                            <a href="{{ route('public.event') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 {{ request()->routeIs('public.event') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Event</a>
+                        </div>
+                    </div>
+                    <!-- Layanan Publik Dropdown -->
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" @keydown.escape="open = false" type="button" class="flex items-center text-gray-700 hover:text-green-600 font-medium transition-colors duration-200 whitespace-nowrap focus:outline-none {{ request()->routeIs('public.suratOnline') || request()->routeIs('public.booking') || request()->routeIs('public.feedback') || request()->routeIs('public.mappoint') ? 'border-b-2 border-green-600 text-green-700 font-bold' : '' }}">
+                            Layanan Publik <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                        <div x-show="open" @click.away="open = false" x-transition class="absolute left-0 mt-2 w-52 bg-white rounded shadow-lg z-50 py-2">
+                            <a href="{{ route('public.suratOnline') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 {{ request()->routeIs('public.suratOnline') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Surat Online</a>
+                            <a href="{{ route('public.booking') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 {{ request()->routeIs('public.booking') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Booking</a>
+                            <a href="{{ route('public.feedback') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 {{ request()->routeIs('public.feedback') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Feedback</a>
+                            <a href="{{ route('public.mappoint') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 {{ request()->routeIs('public.mappoint') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Peta</a>
+                        </div>
+                    </div>
+                    <!-- Artikel -->
+                    <a href="{{ route('public.artikel') }}" class="text-gray-700 hover:text-green-600 transition-colors duration-200 font-medium whitespace-nowrap {{ request()->routeIs('public.artikel') ? 'border-b-2 border-green-600 text-green-700 font-bold' : '' }}">Artikel</a>
+                </div>
+
+                <!-- Auth Buttons -->
+                <div class="hidden md:flex items-center space-x-4 flex-shrink-0">
+                    @auth
+                        <a href="/admin" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium">
+                            Dashboard
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-green-600 transition-colors duration-200 font-medium">Masuk</a>
+                        <a href="{{ route('register') }}" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium">
+                            Daftar
+                        </a>
+                    @endauth
+                </div>
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button @click="open = !open" class="text-gray-700 hover:text-green-600 focus:outline-none focus:text-green-600 transition-colors duration-200">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            <path x-show="open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
                     </button>
-                    <div class="absolute left-0 mt-2 w-56 bg-white border rounded shadow-lg opacity-0 group-hover:opacity-100 group-hover:visible invisible transition-all z-40">
-                        <a href="/produk" class="block px-4 py-2 @if(request()->routeIs('public.produk')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Produk</a>
-                        <a href="/event" class="block px-4 py-2 @if(request()->routeIs('public.event')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Event</a>
-                        <a href="/homestay" class="block px-4 py-2 @if(request()->routeIs('public.homestay')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Homestay</a>
-                        <a href="/artikel" class="block px-4 py-2 @if(request()->routeIs('public.artikel')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Artikel</a>
-                        <a href="/galeri" class="block px-4 py-2 @if(request()->routeIs('public.galeri')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Galeri</a>
-                        <a href="/komunitas" class="block px-4 py-2 @if(request()->routeIs('public.komunitas')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Komunitas</a>
-                        <a href="/booking" class="block px-4 py-2 @if(request()->routeIs('public.booking')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Booking</a>
-                        <a href="/feedback" class="block px-4 py-2 @if(request()->routeIs('public.feedback')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Feedback</a>
-                        <a href="/surat-online" class="block px-4 py-2 @if(request()->routeIs('public.suratOnline')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Surat Online</a>
-                        <a href="/mappoint" class="block px-4 py-2 @if(request()->routeIs('public.mappoint')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Map</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-1" class="md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="{{ route('public.home') }}" class="block px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 font-medium {{ request()->routeIs('public.home') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Beranda</a>
+                <!-- Profil Desa Group -->
+                <div x-data="{ open: false }" class="mb-1">
+                    <button @click="open = !open" class="flex items-center w-full px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 font-medium focus:outline-none {{ request()->routeIs('public.komunitas') || request()->routeIs('public.galeri') ? 'bg-green-100 text-green-700 font-bold' : '' }}">
+                        Profil Desa <i :class="open ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas ml-auto text-xs"></i>
+                    </button>
+                    <div x-show="open" x-transition class="pl-6">
+                        <a href="{{ route('public.komunitas') }}" class="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 {{ request()->routeIs('public.komunitas') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Komunitas</a>
+                        <a href="{{ route('public.galeri') }}" class="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 {{ request()->routeIs('public.galeri') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Galeri</a>
                     </div>
                 </div>
-            </nav>
-            <!-- Hamburger -->
-            <button id="nav-toggle" class="md:hidden text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200 p-2 rounded">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
-            </button>
-        </div>
-        <!-- Mobile Nav -->
-        <div id="mobile-nav" class="md:hidden hidden bg-white border-t shadow px-4 pb-4">
-            <div class="flex flex-col gap-2 mb-2">
-                <a href="/" class="@if(request()->routeIs('public.home')) text-blue-700 font-bold underline @else hover:text-blue-600 font-medium transition-colors @endif">Beranda</a>
-                <a href="/wisata" class="@if(request()->routeIs('public.wisata')) text-blue-700 font-bold underline @else hover:text-blue-600 font-medium transition-colors @endif">Wisata</a>
-                <a href="/umkm" class="@if(request()->routeIs('public.umkm')) text-blue-700 font-bold underline @else hover:text-blue-600 font-medium transition-colors @endif">UMKM</a>
-                <button id="mobile-dropdown-toggle" class="flex items-center gap-1 mt-2 py-2 px-2 rounded hover:bg-blue-50 focus:outline-none">
-                    Menu Lain
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                <div id="mobile-dropdown" class="hidden flex-col gap-1 mt-1 ml-2">
-                    <a href="/produk" class="@if(request()->routeIs('public.produk')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Produk</a>
-                    <a href="/event" class="@if(request()->routeIs('public.event')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Event</a>
-                    <a href="/homestay" class="@if(request()->routeIs('public.homestay')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Homestay</a>
-                    <a href="/artikel" class="@if(request()->routeIs('public.artikel')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Artikel</a>
-                    <a href="/galeri" class="@if(request()->routeIs('public.galeri')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Galeri</a>
-                    <a href="/komunitas" class="@if(request()->routeIs('public.komunitas')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Komunitas</a>
-                    <a href="/booking" class="@if(request()->routeIs('public.booking')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Booking</a>
-                    <a href="/feedback" class="@if(request()->routeIs('public.feedback')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Feedback</a>
-                    <a href="/surat-online" class="@if(request()->routeIs('public.suratOnline')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Surat Online</a>
-                    <a href="/mappoint" class="@if(request()->routeIs('public.mappoint')) text-blue-700 font-bold underline @else hover:bg-blue-50 transition @endif">Map</a>
+                <!-- UMKM & Produk Group -->
+                <div x-data="{ open: false }" class="mb-1">
+                    <button @click="open = !open" class="flex items-center w-full px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 font-medium focus:outline-none {{ request()->routeIs('public.umkm') || request()->routeIs('public.produk') ? 'bg-green-100 text-green-700 font-bold' : '' }}">
+                        UMKM & Produk <i :class="open ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas ml-auto text-xs"></i>
+                    </button>
+                    <div x-show="open" x-transition class="pl-6">
+                        <a href="{{ route('public.umkm') }}" class="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 {{ request()->routeIs('public.umkm') ? 'bg-green-100 text-green-700 font-bold' : '' }}">UMKM</a>
+                        <a href="{{ route('public.produk') }}" class="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 {{ request()->routeIs('public.produk') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Produk</a>
+                    </div>
                 </div>
+                <!-- Pariwisata Group -->
+                <div x-data="{ open: false }" class="mb-1">
+                    <button @click="open = !open" class="flex items-center w-full px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 font-medium focus:outline-none {{ request()->routeIs('public.wisata') || request()->routeIs('public.homestay') || request()->routeIs('public.event') ? 'bg-green-100 text-green-700 font-bold' : '' }}">
+                        Pariwisata <i :class="open ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas ml-auto text-xs"></i>
+                    </button>
+                    <div x-show="open" x-transition class="pl-6">
+                        <a href="{{ route('public.wisata') }}" class="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 {{ request()->routeIs('public.wisata') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Wisata</a>
+                        <a href="{{ route('public.homestay') }}" class="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 {{ request()->routeIs('public.homestay') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Homestay</a>
+                        <a href="{{ route('public.event') }}" class="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 {{ request()->routeIs('public.event') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Event</a>
+                    </div>
+                </div>
+                <!-- Layanan Publik Group -->
+                <div x-data="{ open: false }" class="mb-1">
+                    <button @click="open = !open" class="flex items-center w-full px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 font-medium focus:outline-none {{ request()->routeIs('public.suratOnline') || request()->routeIs('public.booking') || request()->routeIs('public.feedback') || request()->routeIs('public.mappoint') ? 'bg-green-100 text-green-700 font-bold' : '' }}">
+                        Layanan Publik <i :class="open ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas ml-auto text-xs"></i>
+                    </button>
+                    <div x-show="open" x-transition class="pl-6">
+                        <a href="{{ route('public.suratOnline') }}" class="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 {{ request()->routeIs('public.suratOnline') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Surat Online</a>
+                        <a href="{{ route('public.booking') }}" class="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 {{ request()->routeIs('public.booking') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Booking</a>
+                        <a href="{{ route('public.feedback') }}" class="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 {{ request()->routeIs('public.feedback') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Feedback</a>
+                        <a href="{{ route('public.mappoint') }}" class="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 {{ request()->routeIs('public.mappoint') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Peta</a>
+                    </div>
+                </div>
+                <!-- Artikel -->
+                <a href="{{ route('public.artikel') }}" class="block px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 font-medium {{ request()->routeIs('public.artikel') ? 'bg-green-100 text-green-700 font-bold' : '' }}">Artikel</a>
+                <!-- Auth Buttons -->
+                @auth
+                    <a href="/admin" class="block px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200 font-medium">Dashboard</a>
+                @else
+                    <a href="{{ route('login') }}" class="block px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-gray-50 rounded-md transition-colors duration-200 font-medium">Masuk</a>
+                    <a href="{{ route('register') }}" class="block px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200 font-medium">Daftar</a>
+                @endauth
             </div>
-            <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const btn = document.getElementById('nav-toggle');
-                const nav = document.getElementById('mobile-nav');
-                btn && btn.addEventListener('click', () => nav.classList.toggle('hidden'));
-                const ddToggle = document.getElementById('mobile-dropdown-toggle');
-                const dd = document.getElementById('mobile-dropdown');
-                ddToggle && ddToggle.addEventListener('click', () => dd.classList.toggle('hidden'));
-            });
-            </script>
         </div>
-    </header>
-    <!-- Content -->
-    <main class="flex-1 container mx-auto px-4 py-8">
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-16">
         @yield('content')
     </main>
+
     <!-- Footer -->
-    <footer class="bg-gray-900 border-t mt-8">
-        <div class="container mx-auto px-4 py-8 text-center text-gray-300 text-sm flex flex-col items-center gap-2">
-            <div class="mb-1 font-semibold text-lg text-white">Desa UMKM</div>
-            <div class="mb-1">Alamat: Jl. Raya Desa UMKM No. 1, Indonesia</div>
-            <div class="mb-1">Email: <a href="mailto:info@desa-umkm.id" class="text-blue-400 hover:underline">info@desa-umkm.id</a></div>
-            <div class="flex gap-6 justify-center mt-2">
-                <a href="#" class="hover:text-blue-400 flex items-center transition-colors" title="Instagram"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M7.75 2A5.75 5.75 0 0 0 2 7.75v8.5A5.75 5.75 0 0 0 7.75 22h8.5A5.75 5.75 0 0 0 22 16.25v-8.5A5.75 5.75 0 0 0 16.25 2zm0 1.5h8.5A4.25 4.25 0 0 1 20.5 7.75v8.5A4.25 4.25 0 0 1 16.25 20.5h-8.5A4.25 4.25 0 0 1 3.5 16.25v-8.5A4.25 4.25 0 0 1 7.75 3.5zm4.25 2.75a4.75 4.75 0 1 0 0 9.5 4.75 4.75 0 0 0 0-9.5zm0 1.5a3.25 3.25 0 1 1 0 6.5 3.25 3.25 0 0 1 0-6.5zm5.25 1.25a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg></a>
-                <a href="#" class="hover:text-blue-400 flex items-center transition-colors" title="Facebook"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.6 0 0 .6 0 1.326v21.348C0 23.4.6 24 1.326 24h11.495v-9.294H9.692v-3.622h3.129V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.4 24 24 23.4 24 22.674V1.326C24 .6 23.4 0 22.675 0"/></svg></a>
-                <a href="#" class="hover:text-blue-400 flex items-center transition-colors" title="WhatsApp"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.031-.967-.273-.099-.472-.148-.67.15-.198.297-.767.967-.94 1.166-.173.198-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.149-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51-.173-.008-.372-.01-.571-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.077 4.363.71.306 1.263.489 1.694.626.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.288.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg></a>
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-home text-white"></i>
+                        </div>
+                        <span class="text-lg font-bold">Desa UMKM</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">
+                        Platform digital untuk mengembangkan usaha mikro, kecil, dan menengah di desa.
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Layanan</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="{{ route('public.wisata') }}" class="hover:text-white transition-colors duration-200">Wisata</a></li>
+                        <li><a href="{{ route('public.umkm') }}" class="hover:text-white transition-colors duration-200">UMKM</a></li>
+                        <li><a href="{{ route('public.produk') }}" class="hover:text-white transition-colors duration-200">Produk</a></li>
+                        <li><a href="{{ route('public.homestay') }}" class="hover:text-white transition-colors duration-200">Homestay</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Informasi</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="{{ route('public.event') }}" class="hover:text-white transition-colors duration-200">Event</a></li>
+                        <li><a href="{{ route('public.artikel') }}" class="hover:text-white transition-colors duration-200">Artikel</a></li>
+                        <li><a href="{{ route('public.galeri') }}" class="hover:text-white transition-colors duration-200">Galeri</a></li>
+                        <li><a href="{{ route('public.komunitas') }}" class="hover:text-white transition-colors duration-200">Komunitas</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Kontak</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-envelope text-green-500"></i>
+                            <span>info@desaumkm.com</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-phone text-green-500"></i>
+                            <span>+62 123 456 789</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-map-marker-alt text-green-500"></i>
+                            <span>Desa UMKM, Indonesia</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fab fa-youtube text-xl"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div class="mt-4 text-xs text-gray-500">&copy; {{ date('Y') }} Desa UMKM. All rights reserved.</div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+                <p>&copy; {{ date('Y') }} Desa UMKM. All rights reserved.</p>
+            </div>
         </div>
     </footer>
+
+    <!-- AOS Animation Script -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+    </script>
+
+    @stack('scripts')
 </body>
-</html> 
+</html>
