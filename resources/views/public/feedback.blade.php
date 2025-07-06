@@ -3,8 +3,8 @@
 @section('title', 'Feedback Desa')
 
 @section('content')
-<div id="feedback-app">
-    <feedback-list :feedback-data='@json($feedback)'></feedback-list>
+<div id="feedback-app" data-aos="fade-up" data-aos-duration="1000" data-feedback-data='@json($feedback)'>
+    <feedback-list :feedback-data="feedbackData"></feedback-list>
 </div>
 @endsection
 

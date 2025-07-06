@@ -33,12 +33,20 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'role' => ['required', 'string', 'in:warga,pengunjung'],
+            'nik' => ['required', 'string', 'size:16', 'unique:'.User::class],
+            'dusun' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'role' => $request->role,
+            'nik' => $request->nik,
+            'dusun' => $request->dusun,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
         ]);
 
@@ -46,6 +54,11 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        // Redirect sesuai role
+        if ($user->role === 'admin' || $user->role === 'kades') {
+            return redirect('/admin');
+        } else {
+            return redirect('/');
+        }
     }
 }
