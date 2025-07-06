@@ -3,8 +3,8 @@
 @section('title', 'Map Desa')
 
 @section('content')
-<div id="mappoint-app" data-aos="fade-up" data-aos-duration="1000">
-    <mappoint-list :mappoint-data='@json($mappoint)'></mappoint-list>
+<div id="mappoint-app" data-aos="fade-up" data-aos-duration="1000" data-mappoint-data='@json($mappoint)'>
+    <mappoint-list :mappoint-data="mappointData"></mappoint-list>
 </div>
 @endsection
 

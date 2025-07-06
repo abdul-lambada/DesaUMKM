@@ -3,8 +3,8 @@
 @section('title', 'Booking Desa')
 
 @section('content')
-<div id="booking-app" data-aos="fade-up" data-aos-duration="1000">
-    <booking-list :booking-data='@json($booking)'></booking-list>
+<div id="booking-app" data-aos="fade-up" data-aos-duration="1000" data-booking-data='@json($booking)'>
+    <booking-list :booking-data="bookingData"></booking-list>
 </div>
 @endsection
 

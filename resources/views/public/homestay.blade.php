@@ -3,8 +3,8 @@
 @section('title', 'Homestay Desa')
 
 @section('content')
-<div id="homestay-app" data-aos="fade-up" data-aos-duration="1000">
-    <homestay-list :homestay-data='@json($homestay)'></homestay-list>
+<div id="homestay-app" data-aos="fade-up" data-aos-duration="1000" data-homestay-data='@json($homestay)'>
+    <homestay-list :homestay-data="homestayData"></homestay-list>
 </div>
 @endsection
 

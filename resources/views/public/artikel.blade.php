@@ -3,8 +3,8 @@
 @section('title', 'Artikel Desa')
 
 @section('content')
-<div id="artikel-app" data-aos="fade-up" data-aos-duration="1000">
-    <artikel-list :artikel-data='@json($artikel)'></artikel-list>
+<div id="artikel-app" data-aos="fade-up" data-aos-duration="1000" data-artikel-data='@json($artikel)'>
+    <artikel-list :artikel-data="artikelData"></artikel-list>
 </div>
 @endsection
 
