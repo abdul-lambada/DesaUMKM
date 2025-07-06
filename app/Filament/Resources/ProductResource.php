@@ -23,7 +23,31 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('umkm_id')
+                    ->label('UMKM')
+                    ->relationship('umkm', 'name')
+                    ->searchable()
+                    ->required(),
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('description')
+                    ->required(),
+                Forms\Components\TextInput::make('price')
+                    ->numeric()
+                    ->required(),
+                Forms\Components\TextInput::make('stock')
+                    ->numeric()
+                    ->required(),
+                Forms\Components\TextInput::make('discount')
+                    ->numeric()
+                    ->default(0),
+                Forms\Components\Toggle::make('available')
+                    ->label('Available')
+                    ->default(true),
+                Forms\Components\TextInput::make('image')
+                    ->label('Image URL')
+                    ->nullable(),
             ]);
     }
 
@@ -31,10 +55,28 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('umkm.name')
+                    ->label('UMKM')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('price')
+                    ->money('IDR', true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('stock')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('discount')
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('available')
+                    ->boolean(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                // Tambahkan filter jika perlu
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

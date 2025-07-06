@@ -23,7 +23,34 @@ class WisataResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('description')
+                    ->required(),
+                Forms\Components\TextInput::make('location')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('ticket_price')
+                    ->numeric()
+                    ->required(),
+                Forms\Components\TextInput::make('open_hours')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('facilities')
+                    ->required(),
+                Forms\Components\TextInput::make('rating')
+                    ->numeric()
+                    ->default(0),
+                Forms\Components\TextInput::make('lat')
+                    ->numeric()
+                    ->nullable(),
+                Forms\Components\TextInput::make('lng')
+                    ->numeric()
+                    ->nullable(),
+                Forms\Components\TextInput::make('image')
+                    ->label('Image URL')
+                    ->nullable(),
             ]);
     }
 
@@ -31,10 +58,24 @@ class WisataResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('location')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('ticket_price')
+                    ->money('IDR', true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('open_hours')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('rating')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                // Tambahkan filter jika perlu
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

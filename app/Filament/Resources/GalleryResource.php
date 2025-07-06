@@ -23,7 +23,25 @@ class GalleryResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('title')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Select::make('category')
+                    ->options([
+                        'umkm' => 'UMKM',
+                        'wisata' => 'Wisata',
+                        'event' => 'Event',
+                        'desa' => 'Desa',
+                    ])
+                    ->required(),
+                Forms\Components\TextInput::make('image_path')
+                    ->label('Image Path')
+                    ->required(),
+                Forms\Components\Select::make('uploaded_by')
+                    ->label('Uploaded By')
+                    ->relationship('user', 'name')
+                    ->searchable()
+                    ->required(),
             ]);
     }
 
@@ -31,10 +49,21 @@ class GalleryResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('title')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('category')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Uploaded By')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                // Tambahkan filter jika perlu
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

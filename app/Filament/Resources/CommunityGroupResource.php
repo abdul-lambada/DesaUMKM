@@ -23,7 +23,28 @@ class CommunityGroupResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Select::make('type')
+                    ->options([
+                        'karang_taruna' => 'Karang Taruna',
+                        'pokdarwis' => 'Pokdarwis',
+                        'kelompok_tani' => 'Kelompok Tani',
+                    ])
+                    ->required(),
+                Forms\Components\Textarea::make('description')
+                    ->required(),
+                Forms\Components\TextInput::make('leader_name')
+                    ->label('Leader Name')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('phone')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('logo')
+                    ->label('Logo URL')
+                    ->nullable(),
             ]);
     }
 
@@ -31,10 +52,22 @@ class CommunityGroupResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('leader_name')
+                    ->label('Leader Name')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('phone')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                // Tambahkan filter jika perlu
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

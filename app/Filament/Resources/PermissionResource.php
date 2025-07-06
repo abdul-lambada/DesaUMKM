@@ -27,17 +27,12 @@ class PermissionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Card::make()
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255)
-                            ->unique(ignoreRecord: true),
-                        Forms\Components\TextInput::make('guard_name')
-                            ->default('web')
-                            ->required()
-                            ->maxLength(255),
-                    ])
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('guard_name')
+                    ->required()
+                    ->maxLength(255),
             ]);
     }
 
@@ -46,45 +41,20 @@ class PermissionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('guard_name')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('roles_count')
-                    ->counts('roles')
-                    ->label('Roles'),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('guard_name')
-                    ->options([
-                        'web' => 'Web',
-                        'api' => 'API',
-                    ]),
-                Tables\Filters\Filter::make('created_at')
-                    ->form([
-                        Forms\Components\DatePicker::make('created_from'),
-                        Forms\Components\DatePicker::make('created_until'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    })
+                // Tambahkan filter jika perlu
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

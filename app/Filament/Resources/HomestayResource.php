@@ -23,7 +23,28 @@ class HomestayResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('description')
+                    ->required(),
+                Forms\Components\Textarea::make('address')
+                    ->required(),
+                Forms\Components\TextInput::make('price_per_night')
+                    ->numeric()
+                    ->required(),
+                Forms\Components\TextInput::make('contact')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('image')
+                    ->label('Image URL')
+                    ->nullable(),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'tersedia' => 'Tersedia',
+                        'penuh' => 'Penuh',
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -31,10 +52,22 @@ class HomestayResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('price_per_night')
+                    ->money('IDR', true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('contact')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                // Tambahkan filter jika perlu
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

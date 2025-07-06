@@ -23,7 +23,31 @@ class BookingResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('user_id')
+                    ->label('User')
+                    ->relationship('user', 'name')
+                    ->searchable()
+                    ->required(),
+                Forms\Components\Select::make('homestay_id')
+                    ->label('Homestay')
+                    ->relationship('homestay', 'name')
+                    ->searchable()
+                    ->required(),
+                Forms\Components\DatePicker::make('check_in')
+                    ->required(),
+                Forms\Components\DatePicker::make('check_out')
+                    ->required(),
+                Forms\Components\TextInput::make('total_price')
+                    ->numeric()
+                    ->required(),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'dikonfirmasi' => 'Dikonfirmasi',
+                        'selesai' => 'Selesai',
+                        'batal' => 'Batal',
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -31,10 +55,31 @@ class BookingResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('User')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('homestay.name')
+                    ->label('Homestay')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('check_in')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('check_out')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('total_price')
+                    ->money('IDR', true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                // Tambahkan filter jika perlu
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

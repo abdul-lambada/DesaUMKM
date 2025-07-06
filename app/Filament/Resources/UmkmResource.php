@@ -27,54 +27,44 @@ class UmkmResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Card::make()
-                    ->schema([
-                        Forms\Components\Select::make('user_id')
-                            ->relationship('user', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required(),
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\Select::make('category')
-                            ->options([
-                                'makanan' => 'Makanan',
-                                'minuman' => 'Minuman',
-                                'kerajinan' => 'Kerajinan',
-                                'fashion' => 'Fashion',
-                                'jasa' => 'Jasa',
-                                'lainnya' => 'Lainnya',
-                            ])
-                            ->required(),
-                        Forms\Components\TextInput::make('nib')
-                            ->label('NIB')
-                            ->maxLength(50),
-                        Forms\Components\Select::make('legal_status')
-                            ->options([
-                                'terdaftar' => 'Terdaftar',
-                                'berizin' => 'Berizin',
-                                'belum_terdaftar' => 'Belum Terdaftar',
-                            ])
-                            ->required(),
-                        Forms\Components\Textarea::make('address')
-                            ->required()
-                            ->maxLength(500),
-                        Forms\Components\Textarea::make('description')
-                            ->maxLength(1000),
-                        Forms\Components\FileUpload::make('logo')
-                            ->image()
-                            ->directory('umkm-logos'),
-                        Forms\Components\Select::make('status')
-                            ->options([
-                                'active' => 'Aktif',
-                                'inactive' => 'Tidak Aktif',
-                                'pending' => 'Menunggu',
-                            ])
-                            ->default('active')
-                            ->required(),
+                Forms\Components\Select::make('user_id')
+                    ->label('User')
+                    ->relationship('user', 'name')
+                    ->searchable()
+                    ->required(),
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Select::make('category')
+                    ->options([
+                        'kuliner' => 'Kuliner',
+                        'kerajinan' => 'Kerajinan',
+                        'jasa' => 'Jasa',
+                        'pertanian' => 'Pertanian',
                     ])
-                    ->columns(2)
+                    ->required(),
+                Forms\Components\TextInput::make('nib')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Select::make('legal_status')
+                    ->options([
+                        'resmi' => 'Resmi',
+                        'belum_resmi' => 'Belum Resmi',
+                    ])
+                    ->required(),
+                Forms\Components\Textarea::make('address')
+                    ->required(),
+                Forms\Components\Textarea::make('description')
+                    ->required(),
+                Forms\Components\TextInput::make('logo')
+                    ->label('Logo URL')
+                    ->nullable(),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'aktif' => 'Aktif',
+                        'tidak_aktif' => 'Tidak Aktif',
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -83,68 +73,27 @@ class UmkmResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('category')
-                    ->badge()
-                    ->color('info'),
-                Tables\Columns\TextColumn::make('nib')
-                    ->label('NIB')
+                    ->label('User')
+                    ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('category')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('legal_status')
-                    ->badge()
-                    ->color('warning'),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'active' => 'success',
-                        'inactive' => 'danger',
-                        'pending' => 'warning',
-                    }),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('category')
-                    ->options([
-                        'makanan' => 'Makanan',
-                        'minuman' => 'Minuman',
-                        'kerajinan' => 'Kerajinan',
-                        'fashion' => 'Fashion',
-                        'jasa' => 'Jasa',
-                        'lainnya' => 'Lainnya',
-                    ]),
-                Tables\Filters\SelectFilter::make('status')
-                    ->options([
-                        'active' => 'Aktif',
-                        'inactive' => 'Tidak Aktif',
-                        'pending' => 'Menunggu',
-                    ]),
-                Tables\Filters\Filter::make('created_at')
-                    ->form([
-                        Forms\Components\DatePicker::make('created_from'),
-                        Forms\Components\DatePicker::make('created_until'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    })
+                // Tambahkan filter jika perlu
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

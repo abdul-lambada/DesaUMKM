@@ -23,7 +23,27 @@ class EventResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('title')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('description')
+                    ->required(),
+                Forms\Components\DatePicker::make('date')
+                    ->required(),
+                Forms\Components\TextInput::make('location')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Select::make('type')
+                    ->options([
+                        'budaya' => 'Budaya',
+                        'keagamaan' => 'Keagamaan',
+                        'umkm' => 'UMKM',
+                        'umum' => 'Umum',
+                    ])
+                    ->required(),
+                Forms\Components\TextInput::make('image')
+                    ->label('Image URL')
+                    ->nullable(),
             ]);
     }
 
@@ -31,10 +51,22 @@ class EventResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('title')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('date')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('location')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                // Tambahkan filter jika perlu
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
