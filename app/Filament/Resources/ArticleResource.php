@@ -23,7 +23,29 @@ class ArticleResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('user_id')
+                    ->label('Author')
+                    ->relationship('user', 'name')
+                    ->searchable()
+                    ->required(),
+                Forms\Components\TextInput::make('title')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('content')
+                    ->required(),
+                Forms\Components\TextInput::make('image')
+                    ->label('Image URL')
+                    ->nullable(),
+                Forms\Components\Select::make('category')
+                    ->options([
+                        'berita' => 'Berita',
+                        'tips' => 'Tips',
+                        'pengumuman' => 'Pengumuman',
+                    ])
+                    ->required(),
+                Forms\Components\DateTimePicker::make('published_at')
+                    ->label('Published At')
+                    ->nullable(),
             ]);
     }
 
@@ -31,12 +53,42 @@ class ArticleResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Author')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('title')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('category')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('published_at')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('category')
+                    ->options([
+                        'berita' => 'Berita',
+                        'tips' => 'Tips',
+                        'pengumuman' => 'Pengumuman',
+                    ]),
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from'),
+                        Forms\Components\DatePicker::make('created_until'),
+                    ])
+                    ->query(function ($query, $data) {
+                        return $query
+                            ->when($data['created_from'], fn($q, $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'], fn($q, $date) => $q->whereDate('created_at', '<=', $date));
+                    }),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

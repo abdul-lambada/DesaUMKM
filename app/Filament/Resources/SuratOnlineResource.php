@@ -23,7 +23,33 @@ class SuratOnlineResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('user_id')
+                    ->label('User')
+                    ->relationship('user', 'name')
+                    ->searchable()
+                    ->required(),
+                Forms\Components\Select::make('type')
+                    ->options([
+                        'SKTM' => 'SKTM',
+                        'Domisili' => 'Domisili',
+                        'Usaha' => 'Usaha',
+                        'Kematian' => 'Kematian',
+                        'Nikah' => 'Nikah',
+                    ])
+                    ->required(),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'diajukan' => 'Diajukan',
+                        'diproses' => 'Diproses',
+                        'ditolak' => 'Ditolak',
+                        'selesai' => 'Selesai',
+                    ])
+                    ->required(),
+                Forms\Components\TextInput::make('file_path')
+                    ->label('File Path')
+                    ->nullable(),
+                Forms\Components\Textarea::make('keterangan')
+                    ->required(),
             ]);
     }
 
@@ -31,12 +57,47 @@ class SuratOnlineResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('User')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('type')
+                    ->options([
+                        'SKTM' => 'SKTM',
+                        'Domisili' => 'Domisili',
+                        'Usaha' => 'Usaha',
+                        'Kematian' => 'Kematian',
+                        'Nikah' => 'Nikah',
+                    ]),
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'diajukan' => 'Diajukan',
+                        'diproses' => 'Diproses',
+                        'ditolak' => 'Ditolak',
+                        'selesai' => 'Selesai',
+                    ]),
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from'),
+                        Forms\Components\DatePicker::make('created_until'),
+                    ])
+                    ->query(function ($query, $data) {
+                        return $query
+                            ->when($data['created_from'], fn($q, $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'], fn($q, $date) => $q->whereDate('created_at', '<=', $date));
+                    }),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

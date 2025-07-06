@@ -23,7 +23,28 @@ class CommunityGroupResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Select::make('type')
+                    ->options([
+                        'karang_taruna' => 'Karang Taruna',
+                        'pokdarwis' => 'Pokdarwis',
+                        'kelompok_tani' => 'Kelompok Tani',
+                    ])
+                    ->required(),
+                Forms\Components\Textarea::make('description')
+                    ->required(),
+                Forms\Components\TextInput::make('leader_name')
+                    ->label('Leader Name')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('phone')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('logo')
+                    ->label('Logo URL')
+                    ->nullable(),
             ]);
     }
 
@@ -31,12 +52,40 @@ class CommunityGroupResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('leader_name')
+                    ->label('Leader Name')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('phone')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('type')
+                    ->options([
+                        'karang_taruna' => 'Karang Taruna',
+                        'pokdarwis' => 'Pokdarwis',
+                        'kelompok_tani' => 'Kelompok Tani',
+                    ]),
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from'),
+                        Forms\Components\DatePicker::make('created_until'),
+                    ])
+                    ->query(function ($query, $data) {
+                        return $query
+                            ->when($data['created_from'], fn($q, $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'], fn($q, $date) => $q->whereDate('created_at', '<=', $date));
+                    }),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

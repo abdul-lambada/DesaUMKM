@@ -23,7 +23,27 @@ class FeedbackResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('user_id')
+                    ->label('User')
+                    ->relationship('user', 'name')
+                    ->searchable()
+                    ->required(),
+                Forms\Components\Textarea::make('message')
+                    ->required(),
+                Forms\Components\Select::make('category')
+                    ->options([
+                        'aspirasi' => 'Aspirasi',
+                        'kritik' => 'Kritik',
+                        'pengaduan' => 'Pengaduan',
+                    ])
+                    ->required(),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'belum_dibaca' => 'Belum Dibaca',
+                        'diproses' => 'Diproses',
+                        'selesai' => 'Selesai',
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -31,12 +51,44 @@ class FeedbackResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('User')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('category')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('category')
+                    ->options([
+                        'aspirasi' => 'Aspirasi',
+                        'kritik' => 'Kritik',
+                        'pengaduan' => 'Pengaduan',
+                    ]),
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'belum_dibaca' => 'Belum Dibaca',
+                        'diproses' => 'Diproses',
+                        'selesai' => 'Selesai',
+                    ]),
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from'),
+                        Forms\Components\DatePicker::make('created_until'),
+                    ])
+                    ->query(function ($query, $data) {
+                        return $query
+                            ->when($data['created_from'], fn($q, $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'], fn($q, $date) => $q->whereDate('created_at', '<=', $date));
+                    }),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

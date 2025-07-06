@@ -28,40 +28,38 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Card::make()
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('email')
-                            ->email()
-                            ->required()
-                            ->maxLength(255)
-                            ->unique(ignoreRecord: true),
-                        Forms\Components\TextInput::make('password')
-                            ->password()
-                            ->required(fn (string $context): bool => $context === 'create')
-                            ->minLength(8)
-                            ->dehydrated(fn ($state) => filled($state))
-                            ->label(fn (string $context): string => $context === 'edit' ? 'New Password' : 'Password'),
-                        Forms\Components\TextInput::make('nik')
-                            ->label('NIK')
-                            ->maxLength(16),
-                        Forms\Components\TextInput::make('phone')
-                            ->tel()
-                            ->maxLength(20),
-                        Forms\Components\TextInput::make('dusun')
-                            ->maxLength(100),
-                        Forms\Components\FileUpload::make('photo')
-                            ->image()
-                            ->directory('user-photos'),
-                        Forms\Components\Select::make('roles')
-                            ->multiple()
-                            ->relationship('roles', 'name')
-                            ->preload()
-                            ->searchable(),
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('email')
+                    ->email()
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('password')
+                    ->password()
+                    ->required(fn($context) => $context === 'create')
+                    ->maxLength(255),
+                Forms\Components\Select::make('role')
+                    ->options([
+                        'admin' => 'Admin',
+                        'warga' => 'Warga',
+                        'umkm' => 'UMKM',
+                        'pengunjung' => 'Pengunjung',
+                        'kades' => 'Kades',
                     ])
-                    ->columns(2)
+                    ->required(),
+                Forms\Components\TextInput::make('nik')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('dusun')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('phone')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('photo')
+                    ->label('Photo URL')
+                    ->nullable(),
             ]);
     }
 
@@ -70,51 +68,46 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('email')
-                    ->searchable()
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('role')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nik')
-                    ->label('NIK')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('phone')
-                    ->searchable(),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('dusun')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('roles.name')
-                    ->badge()
-                    ->color('success'),
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('phone')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('roles')
-                    ->relationship('roles', 'name')
-                    ->multiple()
-                    ->preload(),
+                Tables\Filters\SelectFilter::make('role')
+                    ->options([
+                        'admin' => 'Admin',
+                        'warga' => 'Warga',
+                        'umkm' => 'UMKM',
+                        'pengunjung' => 'Pengunjung',
+                        'kades' => 'Kades',
+                    ]),
                 Tables\Filters\Filter::make('created_at')
                     ->form([
                         Forms\Components\DatePicker::make('created_from'),
                         Forms\Components\DatePicker::make('created_until'),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
+                    ->query(function ($query, $data) {
                         return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    })
+                            ->when($data['created_from'], fn($q, $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'], fn($q, $date) => $q->whereDate('created_at', '<=', $date));
+                    }),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

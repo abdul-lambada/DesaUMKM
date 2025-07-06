@@ -23,7 +23,26 @@ class MapPointResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('title')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Select::make('type')
+                    ->options([
+                        'umkm' => 'UMKM',
+                        'wisata' => 'Wisata',
+                        'layanan' => 'Layanan',
+                        'event' => 'Event',
+                    ])
+                    ->required(),
+                Forms\Components\TextInput::make('lat')
+                    ->numeric()
+                    ->required(),
+                Forms\Components\TextInput::make('lng')
+                    ->numeric()
+                    ->required(),
+                Forms\Components\TextInput::make('related_id')
+                    ->numeric()
+                    ->nullable(),
             ]);
     }
 
@@ -31,12 +50,42 @@ class MapPointResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('title')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('lat')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('lng')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('related_id')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('type')
+                    ->options([
+                        'umkm' => 'UMKM',
+                        'wisata' => 'Wisata',
+                        'layanan' => 'Layanan',
+                        'event' => 'Event',
+                    ]),
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from'),
+                        Forms\Components\DatePicker::make('created_until'),
+                    ])
+                    ->query(function ($query, $data) {
+                        return $query
+                            ->when($data['created_from'], fn($q, $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'], fn($q, $date) => $q->whereDate('created_at', '<=', $date));
+                    }),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
