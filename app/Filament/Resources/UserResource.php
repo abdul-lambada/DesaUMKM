@@ -86,9 +86,27 @@ class UserResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                // Tambahkan filter jika perlu
+                Tables\Filters\SelectFilter::make('role')
+                    ->options([
+                        'admin' => 'Admin',
+                        'warga' => 'Warga',
+                        'umkm' => 'UMKM',
+                        'pengunjung' => 'Pengunjung',
+                        'kades' => 'Kades',
+                    ]),
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from'),
+                        Forms\Components\DatePicker::make('created_until'),
+                    ])
+                    ->query(function ($query, $data) {
+                        return $query
+                            ->when($data['created_from'], fn($q, $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'], fn($q, $date) => $q->whereDate('created_at', '<=', $date));
+                    }),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

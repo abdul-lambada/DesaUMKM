@@ -90,9 +90,36 @@ class UmkmResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                // Tambahkan filter jika perlu
+                Tables\Filters\SelectFilter::make('category')
+                    ->options([
+                        'kuliner' => 'Kuliner',
+                        'kerajinan' => 'Kerajinan',
+                        'jasa' => 'Jasa',
+                        'pertanian' => 'Pertanian',
+                    ]),
+                Tables\Filters\SelectFilter::make('legal_status')
+                    ->options([
+                        'resmi' => 'Resmi',
+                        'belum_resmi' => 'Belum Resmi',
+                    ]),
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'aktif' => 'Aktif',
+                        'tidak_aktif' => 'Tidak Aktif',
+                    ]),
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from'),
+                        Forms\Components\DatePicker::make('created_until'),
+                    ])
+                    ->query(function ($query, $data) {
+                        return $query
+                            ->when($data['created_from'], fn($q, $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'], fn($q, $date) => $q->whereDate('created_at', '<=', $date));
+                    }),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
